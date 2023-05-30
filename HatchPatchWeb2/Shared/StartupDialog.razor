@@ -1,0 +1,40 @@
+﻿@using HatchPatchWeb2.Models
+<MudDialog>
+    <DialogContent>
+        <MudText >
+            Hello!
+        </MudText>
+        <MudTabs Elevation="2" PanelClass="pa-6">
+            @{
+                int i = 0;
+                foreach (var text in TutorialText)
+                {
+                    <MudTabPanel Text="@($"Version {i + 1 + version}")">
+                        <p>@text</p>
+                    </MudTabPanel>
+                    i++;
+                }
+            }
+        </MudTabs>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; } = default!;
+
+    [Parameter] public int version { get; set; } = 0;
+    [Inject]
+    private HttpClient _http { get; set; } = default!;
+
+    private List<string> TutorialText = new();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        TutorialText = await DataConstants.GetTutorialsForVersion(version, _http);
+    }
+
+    void Submit() => MudDialog.Close(DialogResult.Ok(true));
+}

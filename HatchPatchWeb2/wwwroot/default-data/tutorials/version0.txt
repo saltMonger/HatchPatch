@@ -1,0 +1,16 @@
+﻿HELLO!!
+
+Welcome to Version 1 of Hatch Patch!
+This is likely going to be as far as I get for the tool jam (which it has been developed for).
+
+Hatch Patch is a little randomizer designed for getting you to make patches for whatever synth or instruments you use.
+It's more or less set up for VST (or hardware synthesizers) because that's what I use.
+
+I use browser local storage to remember patch suggestions -and- patch files you upload.  There's no servers involved (right now).
+
+In the future I'll add a song mode where you get your previous random patches recommended to you to make a song with!
+
+Hope you enjoy using it and that it doesn't break
+Feel free to post feedback and bug reports in the comments of the itch page!
+
+- tfx

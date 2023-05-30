@@ -1,0 +1,107 @@
+﻿@page "/"
+@page "/index"
+@inject NavigationManager Navigation
+
+<MudContainer>
+    <MudPaper>
+        <MudText Typo="Typo.h3" Align="Align.Center">
+            Hatch Patch
+        </MudText>
+
+        <br />
+        <MudDivider />
+        <br />
+
+        <MudPaper>
+            <MudGrid>
+                <MudTooltip Arrow="true" Placement="Placement.Bottom" Text="Get suggestions for a new patch!">
+                    <MudButton Class="m-4" Variant="Variant.Filled" Color="Color.Primary" OnClick="@(NewPatch)">
+                        New Patch
+                    </MudButton>
+                </MudTooltip>
+                <MudTooltip Arrow="true" Placement="Placement.Bottom" Text="Coming soon...">
+                    <MudButton Class="m-4" Variant="Variant.Filled" Color="Color.Secondary">
+                        New Song
+                    </MudButton>
+                </MudTooltip>
+                <MudTooltip Arrow="true" Placement="Placement.Bottom" Text="Add custom prompt lists/preferences">
+                    <MudButton Class="m-4" EndIcon="@Icons.Material.Filled.Settings" Variant="Variant.Filled" Color="Color.Primary" OnClick="@(() => Navigation.NavigateTo("settings"))">
+                        Settings
+                    </MudButton>
+                </MudTooltip>
+            </MudGrid>
+        </MudPaper>
+
+
+        <br />
+        <MudDivider/>
+        <br />
+         
+        <MudExpansionPanels MultiExpansion="true">
+            <MudExpansionPanel IsInitiallyExpanded="true">
+                <TitleContent>
+                    <MudText Typo="Typo.h6">Newest (by you!)</MudText>
+                </TitleContent>
+                <ChildContent>
+                    <MudGrid>
+                        @{
+                            foreach(var patch in Patches.OrderByDescending(p => p.PatchModified).Take(3))
+                            {
+                                <MudItem md="4" sm="6" xs="12">
+                                    <HatchPatchWeb2.Components.PatchCard 
+                                        Patch="patch" DownloadClick="@DownloadPatch" EditClick="@EditPatch" />
+                                </MudItem>
+                            }
+                        }
+                    </MudGrid>
+                </ChildContent>
+            </MudExpansionPanel>
+            <MudExpansionPanel>
+                <TitleContent>
+                    <MudText Typo="Typo.h6">All Patches</MudText>
+                </TitleContent>
+                <ChildContent>
+                    <MudTable Items="Patches" Hover="true">
+                        <HeaderContent>
+                            <MudTh>Name</MudTh>
+                            <MudTh>Synth</MudTh>
+                            <MudTh>Types</MudTh>
+                            <MudTh>Color</MudTh>
+                            <MudTh></MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="Name">@context.Name</MudTd>
+                            <MudTd DataLabel="Synth">@context.Suggestions.Synth</MudTd>
+                            <MudTd DataLabel="Types">
+                                @foreach (var pt in context.PatchTypes)
+                                {
+                                    <MudChip Color="@pt.Color">@(pt.Name)</MudChip>
+                                }
+                            </MudTd>
+                            <MudTd DataLabel="Color">
+                                <div style="min-width: 100%; min-height: 100%; background-color: @(context.Suggestions.Color);">
+                                </div>
+                            </MudTd>
+                            <MudTd>
+                                <MudButton OnClick="@(() => EditPatch(context.Id.ToString()))" Variant="Variant.Filled" Color="Color.Primary">Edit</MudButton>
+                                @if ((context.PatchData?.Length ?? 0) > 0 && !String.IsNullOrWhiteSpace(context?.PatchFileName))
+                                {
+                                    <MudButton Variant="Variant.Text" Color="Color.Info" OnClick="@(() => DownloadPatch(context))">Download Patch</MudButton>
+                                }
+                            </MudTd>
+                        </RowTemplate>
+                    </MudTable>
+                </ChildContent>
+            </MudExpansionPanel>
+            <MudExpansionPanel>
+                <TitleContent>
+                    <MudText Typo="Typo.h6">All Songs</MudText>
+                </TitleContent>
+                <ChildContent>
+                    Coming soon...!
+                </ChildContent>
+            </MudExpansionPanel>
+        </MudExpansionPanels>
+    </MudPaper>
+</MudContainer>
+        

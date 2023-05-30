@@ -1,0 +1,161 @@
+﻿@page "/patcheditor/{patchId?}"
+@using static HatchPatchWeb2.Models.DataConstants
+
+<MudContainer>
+    <MudPaper>
+        <MudText Typo="Typo.h3">
+            Create Patch
+        </MudText>
+        <MudDivider />
+        <MudGrid>
+            <MudItem lg="12" md="12">
+                <MudGrid>
+                    <MudItem md="4">
+                        <MudGrid>
+                            <MudItem sm="12">
+                                <MudSelect Placeholder="Select Adjective/Mood List" 
+                                    MultiSelection="false" HelperText="Adjective Source"
+                                    SelectedValuesChanged="@(async (adjs) => await OnChange_SelectedAdjectiveListChanged(adjs.ToList()))"
+                                    SelectedValues="@SelectedAdjectiveList" T="AdjectiveLists"> 
+                                    @foreach (var src in Enum.GetValues(typeof(AdjectiveLists)))
+                                    {
+                                        <MudSelectItem Value="@((AdjectiveLists)src)">@src</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudItem>
+                            <MudItem sm="12">
+                                <MudNumericField @bind-Value="numberOfAdjectives" Variant="Variant.Text" Min="1" Max="100" />
+                                <MudSlider @bind-Value="numberOfAdjectives" Min="1" Max="100" Color="Color.Info">
+                                </MudSlider>
+                            </MudItem>
+                        </MudGrid>
+
+                    </MudItem>
+
+                    <MudItem md="4">
+                        <MudGrid>
+                            <MudItem sm="12">
+                                <MudSelect Placeholder="Select Synth List" 
+                                    MultiSelection="false" HelperText="Synth Source" 
+                                    SelectedValuesChanged="@(async (synths) => await OnChange_SelectedSynthListChanged(synths.ToList()))"
+                                    SelectedValues="@SelectedSynthList" T="SynthLists"> 
+                                    @foreach (var src in Enum.GetValues(typeof(SynthLists)))
+                                    {
+                                        <MudSelectItem Value="@((SynthLists)src)">@src</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudItem>
+                            <MudItem sm="12">
+                                <MudTextField hidden="@(!writeInSynth)" Placeholder="Whatever synth you want!" @bind-Value="CustomSynth" HelperText="Custom Synth"></MudTextField>
+                            </MudItem>
+                        </MudGrid>
+                    </MudItem>
+
+                    <MudItem md="4">
+                        <MudCheckBox @bind-Checked="@timeConstraint" >Time Constraint</MudCheckBox>
+                        <MudCheckBox @bind-Checked="@listenToIt">Listen Challenge</MudCheckBox>
+                    </MudItem>
+                     
+                    <MudItem md="12">
+                        <MudButton EndIcon="@Icons.Material.Filled.Casino" Variant="Variant.Filled" Color="Color.Primary"
+                        OnClick="@(() => Randomize())">GO RANDO</MudButton>
+                    </MudItem>
+                </MudGrid>
+            </MudItem>
+            <MudDivider />
+            <MudItem lg="12" hidden="@(!randomized)">
+                <MudGrid>
+                    <MudItem md="3">
+                        <MudList>
+                            <MudListSubheader>
+                                Moods
+                            </MudListSubheader>
+                            @foreach (var adj in GeneratedAdjectives)
+                            {
+                                <MudListItem>@adj</MudListItem>
+                            }
+                        </MudList>
+                    </MudItem>
+                    <MudItem md="3">
+                        <MudGrid >
+                            <MudItem sm="12">
+                                <MudList>
+                                    <MudListSubheader>
+                                        Use This Synth:
+                                    </MudListSubheader>
+                                        <MudListItem>@GeneratedSynths</MudListItem>
+                                </MudList>
+                            </MudItem>
+                            <MudItem sm="12">
+                                <MudText>
+                                    Make it one of these:
+                                </MudText>
+                                @foreach (var pt in GeneratedPatchTypes)
+                                {
+                                    <MudChip Color="@pt.Color">@(pt.Name)</MudChip>
+                                }
+                            </MudItem>
+                        </MudGrid>
+                    </MudItem>
+                    <MudItem md="3">
+                        <MudText Typo="Typo.subtitle1">
+                            Match this Color:
+                        </MudText>
+                        <div style="background-color: @(generatedColor); min-height: 50%; height: 50%; content: @("\" \"")">
+                            @(" ")
+                        </div>
+                    </MudItem>
+                    <MudItem md="3">
+                        <MudGrid>
+                            <MudItem sm="12">
+                                <MudList>
+                                    <MudListSubheader>
+                                        Consider these Constraints:
+                                    </MudListSubheader>
+                                        @foreach (var constraint in GeneratedConstraints)
+                                        {
+                                            <MudListItem>@constraint</MudListItem>
+                                        }                                
+                                </MudList>
+                            </MudItem>
+                        </MudGrid>
+                    </MudItem>
+                </MudGrid>
+            </MudItem>
+
+            <MudDivider hidden="@(!randomized)"/> 
+
+            <MudItem lg="12" hidden="@(!randomized)">
+                <MudGrid>
+                    <MudItem md="4">
+                        <MudTextField @bind-Value="patchName" Label="Patch Name" HelperText="Patch Name"></MudTextField>
+                        
+                        <MudDivider Class="my-2" />
+                        <MudChipSet SelectedValuesChanged="(val) => SelectedPatchTypeValuesChanged(val)" SelectedValues="selectedPatchTypeValues" MultiSelection="true">
+                            @foreach (var pt in PatchTypes)
+                            {
+                                <MudChip Value="pt.Name" Default="false" Variant="Variant.Text" Text="@pt.Name" Color="Color.Default" SelectedColor="@pt.Color">@pt.Name</MudChip>
+                            }
+                        </MudChipSet>
+                    
+                    </MudItem>
+                    <MudItem md="4">
+                        <MudTextField @bind-Value="patchNotes" Label="Patch Notes" Lines="5" HelperText="Patch Notes"></MudTextField>
+                    </MudItem>
+                    <MudItem md="4">
+                        @*<div @ref="fileDropContainer" class="file-drop-zone @HoverClass" @ondragenter="OnDragEnter" @ondragleave="OnDragLeave" @ondragover="OnDragEnter">*@
+                            <InputFile OnChange="@FileUploaded" ></InputFile>
+                        @*</div>*@
+                        <MudDivider Class="my-2" />
+                        <MudButton OnClick="@(OverwritePatch)" Variant="Variant.Filled" Color="Color.Primary">
+                            Save Patch
+                        </MudButton>
+                        <MudButton hidden="@(!editMode)" OnClick="@(SavePatchAsNew)" Variant="Variant.Filled" Color="Color.Primary">
+                            Save Patch as New
+                        </MudButton>
+                    </MudItem>
+                </MudGrid>
+            </MudItem>
+        </MudGrid>
+    </MudPaper>
+</MudContainer>

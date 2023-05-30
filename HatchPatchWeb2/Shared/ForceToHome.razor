@@ -1,0 +1,9 @@
+﻿@inject NavigationManager Navigation
+
+@code {
+    protected async override Task OnInitializedAsync()
+    {
+        Navigation.NavigateTo("");
+        await Task.CompletedTask;
+    }
+}

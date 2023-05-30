@@ -1,0 +1,33 @@
+﻿@using HatchPatchWeb2.Models
+
+<MudCard>
+    <MudCardHeader>
+        <MudText Typo="Typo.h6">
+            @(Patch.Name)
+        </MudText>
+    </MudCardHeader>
+    <MudCardContent>
+            @{
+                foreach (var pt in Patch.PatchTypes)
+                {
+                    <MudChip Color="@(pt.Color)">@(pt.Name)</MudChip>
+                }
+            }
+        <MudDivider/>
+    </MudCardContent>
+    <MudCardActions>
+        <MudButton OnClick=@(() => EditClick(Patch.Id.ToString())) Variant="Variant.Filled" Color="Color.Primary">Edit</MudButton>
+        <MudButton OnClick=@(() => DownloadClick(Patch)) Variant="Variant.Text" Color="Color.Info">Download Patch</MudButton>
+    </MudCardActions>
+</MudCard>
+
+@code {
+    [Parameter]
+    public SavedPatch Patch { get; set; } = new();
+
+    [Parameter]
+    public Action<string> EditClick { get; set; } = default!;
+
+    [Parameter]
+    public Action<SavedPatch> DownloadClick { get; set; } = default!;
+}

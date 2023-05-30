@@ -1,0 +1,40 @@
+﻿@typeparam TItem
+
+<MudItem lg="12">
+    <MudGrid>
+        <MudItem md="2">
+            <MudText>@OptionName</MudText>
+        </MudItem>
+        <MudItem md="6">
+            <MudText>@(String.Join(", ", OptionsPreview))</MudText>
+        </MudItem>
+        <MudItem md="4">
+            <InputFile OnChange="InputFileChanged"></InputFile>
+            <MudDivider Class="my-2" />
+            <MudButton OnClick="@(() => UpdateAction(file, OptionFor))" Variant="Variant.Filled" Color="Color.Primary">
+                Update
+            </MudButton>
+        </MudItem>
+    </MudGrid>
+</MudItem>
+
+@code {
+    [Parameter]
+    public string OptionName { get; set; } = string.Empty;
+
+    [Parameter]
+    public List<string> OptionsPreview { get; set; } = new();
+
+    [Parameter]
+    public TItem OptionFor { get; set; } = default!;
+
+    [Parameter]
+    public Action<IBrowserFile, TItem> UpdateAction { get; set; } = default!;
+
+    private IBrowserFile file;
+
+    private void InputFileChanged(InputFileChangeEventArgs e)
+    {
+        file = e.File;
+    }
+}
