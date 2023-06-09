@@ -15,8 +15,6 @@ public partial class Settings
     public List<string> SynthListUserOne { get; set; } = new();
     public List<string> SynthListUserTwo { get; set; } = new();
 
-
-
     private bool loading = false;
 
     private List<string> GetPreviewListFor(List<string> list) =>

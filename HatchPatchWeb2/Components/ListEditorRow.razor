@@ -1,29 +1,46 @@
 ﻿@typeparam TItem
 
-<MudItem lg="12">
-    <MudGrid>
-        <MudItem md="2">
-            <MudText>@OptionName</MudText>
-        </MudItem>
-        <MudItem md="6">
-            <MudText>@(String.Join(", ", OptionsPreview))</MudText>
-        </MudItem>
-        <MudItem md="4">
-            <InputFile OnChange="InputFileChanged"></InputFile>
-            <MudDivider Class="my-2" />
-            <MudButton OnClick="@(() => UpdateAction(file, OptionFor))" Variant="Variant.Filled" Color="Color.Primary">
-                Update
-            </MudButton>
-        </MudItem>
-    </MudGrid>
-</MudItem>
+<MudExpansionPanel>
+    <TitleContent>
+        <MudText>@OptionName : @(EditOptions.Count) Entries</MudText>
+    </TitleContent>
+    <ChildContent>
+        <MudTable T="string" Items="EditOptions">
+            <ToolBarContent>
+                <MudGrid>
+                    <MudItem md="4">
+                        <InputFile OnChange="InputFileChanged"></InputFile>
+                    </MudItem>
+                    <MudItem md="4">
+                        <MudButton OnClick="@(() => UpdateAction(file, OptionFor))" Variant="Variant.Filled" Color="Color.Primary">
+                            Update
+                        </MudButton>
+                    </MudItem>
+                </MudGrid>
+            </ToolBarContent>
+            <HeaderContent>
+                <MudTh>
+                    Name
+                </MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Name">@context</MudTd>
+            </RowTemplate>
+            <RowEditingTemplate>
+                <MudTd DataLabel="Name">
+                    <MudTextField T="string" @bind-value="@context"></MudTextField>
+                </MudTd>
+            </RowEditingTemplate>
+        </MudTable>
+    </ChildContent>
+</MudExpansionPanel>
 
 @code {
     [Parameter]
     public string OptionName { get; set; } = string.Empty;
 
     [Parameter]
-    public List<string> OptionsPreview { get; set; } = new();
+    public List<string> Options { get; set; } = new();
 
     [Parameter]
     public TItem OptionFor { get; set; } = default!;
@@ -32,9 +49,16 @@
     public Action<IBrowserFile, TItem> UpdateAction { get; set; } = default!;
 
     private IBrowserFile file;
+    private List<string> EditOptions = new();
 
     private void InputFileChanged(InputFileChangeEventArgs e)
     {
         file = e.File;
+    }
+
+    protected async override Task OnParametersSetAsync()
+    {
+        EditOptions = Options;
+        await base.OnParametersSetAsync();
     }
 }

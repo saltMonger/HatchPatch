@@ -17,16 +17,12 @@
                     </MudText>
                 </TitleContent>
                 <ChildContent>
-                <MudGrid>
-                    <HatchPatchWeb2.Components.ListEditorRow TItem="AdjectiveLists" OptionFor="AdjectiveLists.USER_ONE" 
-                     OptionName="User One" OptionsPreview="@(GetPreviewListFor(AdjectiveListUserOne))" UpdateAction=@(async (f, t) => await UpdateActionForAdjectiveListsAsync(f, t))/>
-
-                     <MudDivider Class="my-2" />
-
-                     <HatchPatchWeb2.Components.ListEditorRow TItem="AdjectiveLists" OptionFor="AdjectiveLists.USER_TWO" 
-                     OptionName="User Two" OptionsPreview="@(GetPreviewListFor(AdjectiveListUserTwo))" UpdateAction=@(async (f, t) => await UpdateActionForAdjectiveListsAsync(f, t))/>
-
-                </MudGrid>
+                    <MudExpansionPanels>
+                        <HatchPatchWeb2.Components.ListEditorRow TItem="AdjectiveLists" OptionFor="AdjectiveLists.USER_ONE" 
+                            OptionName="User One" Options="@(AdjectiveListUserOne)" UpdateAction=@(async (f, t) => await UpdateActionForAdjectiveListsAsync(f, t))/>
+                        <HatchPatchWeb2.Components.ListEditorRow TItem="AdjectiveLists" OptionFor="AdjectiveLists.USER_TWO" 
+                            OptionName="User Two" Options="@(AdjectiveListUserTwo)" UpdateAction=@(async (f, t) => await UpdateActionForAdjectiveListsAsync(f, t))/>
+                    </MudExpansionPanels>
                 </ChildContent>
             </MudExpansionPanel>
 
@@ -37,16 +33,12 @@
                     </MudText>
                 </TitleContent>
                 <ChildContent>
-                <MudGrid>
+                <MudExpansionPanels>
                     <HatchPatchWeb2.Components.ListEditorRow TItem="SynthLists" OptionFor="SynthLists.USER_ONE" 
-                     OptionName="User One" OptionsPreview="@(GetPreviewListFor(SynthListUserOne))" UpdateAction=@(async (f, t) => await UpdateActionForSynthListsAsync(f, t))/>
-
-                     <MudDivider Class="my-2" />
-
+                        OptionName="User One" Options="@(SynthListUserOne)" UpdateAction=@(async (f, t) => await UpdateActionForSynthListsAsync(f, t))/>
                      <HatchPatchWeb2.Components.ListEditorRow TItem="SynthLists" OptionFor="SynthLists.USER_TWO" 
-                     OptionName="User Two" OptionsPreview="@(GetPreviewListFor(SynthListUserTwo))" UpdateAction=@(async (f, t) => await UpdateActionForSynthListsAsync(f, t))/>
-
-                </MudGrid>
+                        OptionName="User Two" Options="@(SynthListUserTwo)" UpdateAction=@(async (f, t) => await UpdateActionForSynthListsAsync(f, t))/>
+                </MudExpansionPanels>
                 </ChildContent>
             </MudExpansionPanel>
         </MudExpansionPanels>
