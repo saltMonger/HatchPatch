@@ -17,6 +17,9 @@ namespace HatchPatchWeb2.Pages
 
         public List<SavedPatch> Patches { get; set; } = new List<SavedPatch>();
 
+        private string patchSearchString = string.Empty;
+        private List<Object> selectedPatchTypeValues = new();
+
         protected override async Task OnInitializedAsync()
         {
             var keys = (await _storage.KeysAsync()).Where(k => k.Contains("patch")).ToList();
@@ -54,5 +57,12 @@ namespace HatchPatchWeb2.Pages
         }
 
         private void EditPatch(string id) => Navigation.NavigateTo($"patcheditor/{id}");
+
+        private void SelectedPatchTypeValuesChanged(ICollection<object> objects)
+        {
+            selectedPatchTypeValues = objects.ToList();
+        }
+
+        private bool PatchFilter(SavedPatch patch) => patch.FilterPatch(patchSearchString, selectedPatchTypeValues);
     }
 }

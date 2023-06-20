@@ -36,28 +36,26 @@ public partial class Settings
         loading = false;
     }
 
-    private async Task UpdateActionForAdjectiveListsAsync(IBrowserFile file, AdjectiveLists option)
+    private async Task UpdateActionForAdjectiveListsAsync(List<string> items, AdjectiveLists option)
     {
-        loading = true;
-        var splitList = await GetNLDelimitedValuesFromFile(file);
-        await _storage.SetItemAsync<List<string>>($"{ADJECTIVE_LIST}{option}", splitList);
+
+        await _storage.SetItemAsync<List<string>>($"{ADJECTIVE_LIST}{option}", items);
         switch (option)
         {
-            case AdjectiveLists.USER_ONE: AdjectiveListUserOne = splitList; break;
-            case AdjectiveLists.USER_TWO: AdjectiveListUserTwo = splitList; break;
+            case AdjectiveLists.USER_ONE: AdjectiveListUserOne = items; break;
+            case AdjectiveLists.USER_TWO: AdjectiveListUserTwo = items; break;
         }
         loading = false;
     }
 
-    private async Task UpdateActionForSynthListsAsync(IBrowserFile file, SynthLists option)
+    private async Task UpdateActionForSynthListsAsync(List<string> items, SynthLists option)
     {
-        loading = true;
-        var splitList = await GetNLDelimitedValuesFromFile(file);
-        await _storage.SetItemAsync<List<string>>($"{SYNTH_LIST}{option}", splitList);
+
+        await _storage.SetItemAsync<List<string>>($"{SYNTH_LIST}{option}", items);
         switch (option)
         {
-            case SynthLists.USER_ONE: AdjectiveListUserOne = splitList; break;
-            case SynthLists.USER_TWO: AdjectiveListUserTwo = splitList; break;
+            case SynthLists.USER_ONE: AdjectiveListUserOne = items; break;
+            case SynthLists.USER_TWO: AdjectiveListUserTwo = items; break;
         }
         loading = false;
     }

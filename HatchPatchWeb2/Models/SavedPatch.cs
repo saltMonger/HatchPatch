@@ -12,5 +12,17 @@
         public DateTime PatchModified { get; set; }
 
         public PatchSuggestion Suggestions { get; set; } = new();
+
+        public bool FilterPatch(string name, List<Object> patchTypes)
+        {
+            if (patchTypes.Count > 0)
+                return PatchTypes.Any(pt => patchTypes.Any(ptt => (string)ptt == pt.Name));
+
+            if (string.IsNullOrEmpty(name) || name.Length < 2) return true;
+            if (Name.Contains(name)) return true;
+            if (PatchFileName.Contains(name)) return true;
+
+            return false;
+        }
     }
 }

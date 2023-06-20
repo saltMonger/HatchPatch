@@ -1,37 +1,136 @@
 ﻿@typeparam TItem
+@inject ISnackbar Snackbar
 
-<MudExpansionPanel>
+<MudExpansionPanel IsExpandedChanged="ExpansionChanged">
     <TitleContent>
-        <MudText>@OptionName : @(EditOptions.Count) Entries</MudText>
+        <MudText>@HeaderText</MudText>
     </TitleContent>
     <ChildContent>
-        <MudTable T="string" Items="EditOptions">
-            <ToolBarContent>
+        @if (!isEditing)
+        {
+            <MudTable T="string" Items="Options" Filter="new Func<string, bool>(FilterTable)">
+                <ToolBarContent>
+                    <MudGrid>
+                        <MudItem md="8">
+                            <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium"></MudTextField>
+                        </MudItem>
+                        <MudItem md="4">
+                            <MudButton OnClick="EditOnClick" Variant="Variant.Filled" Color="Color.Primary">Edit</MudButton>
+                        </MudItem>
+                    </MudGrid>
+                </ToolBarContent>
+                <HeaderContent>
+                    <MudTh>
+                        Name
+                    </MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Name">@context</MudTd>
+                </RowTemplate>
+                <PagerContent>
+                    <MudTablePager />
+                </PagerContent>
+            </MudTable>
+        }
+        else
+        {
+            <MudPaper Class="p-2">
+                <div align="left" class="pl-2">
+                    <MudButton OnClick="CancelEditOnClick" Variant="Variant.Text">Cancel</MudButton>
+                    <MudButton OnClick="SaveOnClick" Variant="Variant.Filled" Color="Color.Primary">Save</MudButton>
+                </div>
+
+                <MudSpacer/>
+
                 <MudGrid>
-                    <MudItem md="4">
-                        <InputFile OnChange="InputFileChanged"></InputFile>
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.h6">
+                            List Import
+                        </MudText>
                     </MudItem>
-                    <MudItem md="4">
-                        <MudButton OnClick="@(() => UpdateAction(file, OptionFor))" Variant="Variant.Filled" Color="Color.Primary">
-                            Update
-                        </MudButton>
+
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.body1">
+                            Please upload a list with each item on a new line.
+                            NOTE: Uploading a list will overwrite all data for this option, be careful!
+                        </MudText>
+                    </MudItem>
+
+                    <MudItem xs="12">
+                        <MudGrid>
+                            <MudItem md="4">
+                                <InputFile OnChange="InputFileChanged"></InputFile>
+                            </MudItem>
+                            <MudItem md="4">
+                                <MudButton OnClick="@(async () => await LoadInputFile())" Variant="Variant.Text" Color="Color.Primary">
+                                    Upload List
+                                </MudButton>
+                            </MudItem>
+                        </MudGrid>
                     </MudItem>
                 </MudGrid>
-            </ToolBarContent>
-            <HeaderContent>
-                <MudTh>
-                    Name
-                </MudTh>
-            </HeaderContent>
-            <RowTemplate>
-                <MudTd DataLabel="Name">@context</MudTd>
-            </RowTemplate>
-            <RowEditingTemplate>
-                <MudTd DataLabel="Name">
-                    <MudTextField T="string" @bind-value="@context"></MudTextField>
-                </MudTd>
-            </RowEditingTemplate>
-        </MudTable>
+
+            </MudPaper>
+            <MudTable T="string" Items="EditOptions" CanCancelEdit="true" Filter="new Func<string, bool>(FilterTable)">
+                <ToolBarContent>
+                    <MudGrid Class="pt-2 pb-3">
+                        <MudItem xs="12">
+                            @if(!addingItem)
+                            {
+                                <MudGrid Class="pt-2">
+                                    <MudItem md="8">
+                                        <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium"></MudTextField>
+                                    </MudItem>
+                                    <MudItem md="4">
+                                        <MudButton OnClick="AddItemOnClick" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add">Add</MudButton>
+                                    </MudItem>
+                                </MudGrid>
+                            }
+                            else
+                            {
+                                <MudGrid Class="pt-2">
+                                    <MudItem md="8">
+                                        <MudTextField @bind-Value="addItemString" Placeholder="Option name" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Add" IconSize="Size.Medium"></MudTextField>
+                                    </MudItem>
+                                    <MudItem md="4">
+                                        <MudIconButton OnClick="CommitAddItemOnClick" Icon="@Icons.Material.Filled.Check"></MudIconButton>
+                                        <MudIconButton OnClick="CancelAddItemOnClick" Icon="@Icons.Material.Filled.Cancel"></MudIconButton>
+                                    </MudItem>
+                                </MudGrid>
+                            }
+
+                        </MudItem>
+                    </MudGrid>
+                </ToolBarContent>
+                <HeaderContent>
+                    <MudTh>
+                        Name
+                    </MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Name">@context</MudTd>
+                    <MudTd>
+                        <MudIconButton OnClick="@(() => RowDelete(context))" Variant="Variant.Text" Color="Color.Error" Icon="@Icons.Material.Outlined.Delete">
+                        </MudIconButton>
+                    </MudTd>
+                </RowTemplate>
+                <RowEditingTemplate>
+                    <MudTd DataLabel="Name">
+                        <MudTextField T="string" @bind-Text="context"></MudTextField>
+                    </MudTd>
+
+                </RowEditingTemplate>
+                <PagerContent>
+                    <MudTablePager />
+                </PagerContent>
+            </MudTable>
+            <MudPaper Class="p-2">
+                <div align="right" class="pr-2">
+                    <MudButton OnClick="CancelEditOnClick" Variant="Variant.Text">Cancel</MudButton>
+                    <MudButton OnClick="SaveOnClick" Variant="Variant.Filled" Color="Color.Primary">Save</MudButton>
+                </div>
+            </MudPaper>
+        }
     </ChildContent>
 </MudExpansionPanel>
 
@@ -46,19 +145,103 @@
     public TItem OptionFor { get; set; } = default!;
 
     [Parameter]
-    public Action<IBrowserFile, TItem> UpdateAction { get; set; } = default!;
+    public Action<List<string>, TItem> UpdateAction { get; set; } = default!;
 
     private IBrowserFile file;
     private List<string> EditOptions = new();
+
+    private string HeaderText => $"{OptionName} : {(isEditing ? "EDITING" : Options.Count + " Entries")}";
+
+    private bool isEditing = false;
+    private bool addingItem = false;
+    private string searchString = string.Empty;
+    private string addItemString = string.Empty;
 
     private void InputFileChanged(InputFileChangeEventArgs e)
     {
         file = e.File;
     }
 
-    protected async override Task OnParametersSetAsync()
+    private async Task LoadInputFile()
     {
-        EditOptions = Options;
-        await base.OnParametersSetAsync();
+        // TODO: open some sort of window here
+        if (file == null) 
+        {
+            Snackbar.Add("Please select a file to upload!", Severity.Warning);
+            return;
+        }
+        var splitList = await GetNLDelimitedValuesFromFile(file);
+
+        if (splitList.Count == 0)
+        {
+            Snackbar.Add("Could not read options file - is it empty or malformed?", Severity.Error);
+            return;
+        }
+
+        EditOptions = splitList;
+    }
+
+    private void RowDelete(string item)
+    {
+        EditOptions.Remove(item);
+    }
+
+    private void EditOnClick()
+    {
+        isEditing = true;
+        EditOptions = Options; // TODO: probably need deep copy here
+    }
+
+    private void SaveOnClick()
+    {
+        isEditing = false;
+        UpdateAction(EditOptions, OptionFor);
+    }
+
+    private void AddItemOnClick()
+    {
+        addingItem = true;
+        addItemString = string.Empty;
+    }
+
+    private void CommitAddItemOnClick()
+    {
+        EditOptions.Add(addItemString);
+        addingItem = false;
+    }
+
+    private void CancelAddItemOnClick() => addingItem = false;
+
+    private void CancelEditOnClick() => isEditing = false;
+
+    private async Task<List<string>> GetNLDelimitedValuesFromFile(IBrowserFile file)
+    {
+        string fullString;
+        using (var stream = file.OpenReadStream())
+        using (var sr = new StreamReader(stream))
+        {
+            fullString = await sr.ReadToEndAsync();
+        }
+
+        var splitList = fullString.Split(Environment.NewLine).ToList();
+        return splitList;
+    }
+
+    private bool FilterTable(string item) => Filter(item, searchString);
+    private bool Filter(string item, string searchString)
+    {
+        if (string.IsNullOrWhiteSpace(searchString)) return true;
+        if (searchString.Length < 2) return true;
+        if ((item as string)?.Contains(searchString, StringComparison.OrdinalIgnoreCase) ?? false) 
+            return true;
+        return false;
+    }
+
+    private void ExpansionChanged(bool expanded)
+    {
+        if (isEditing && !expanded)
+        {
+            Snackbar.Add($"You may have changes to {OptionName}!  Remember to save them!");
+        }
     }
 }

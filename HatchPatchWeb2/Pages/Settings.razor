@@ -1,14 +1,11 @@
 ﻿@page "/settings"
 @using static HatchPatchWeb2.Models.DataConstants
 
-<MudContainer style="position: relative;">
+<MudContainer style="position: relative;" Class="py-2">
     <MudOverlay Visible="@loading" Absolute="true">
         <MudProgressCircular Indeterminate="true" Color="Color.Secondary" />
     </MudOverlay>
     <MudPaper>
-        <MudPaper>
-            <MudText>Please Note: When customizing the lists below, upload text files with each entry on a new line. </MudText>
-        </MudPaper>
         <MudExpansionPanels MultiExpansion="true">
             <MudExpansionPanel IsInitiallyExpanded="true">
                 <TitleContent>

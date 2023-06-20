@@ -1,6 +1,8 @@
 ﻿@page "/"
 @page "/index"
+@using HatchPatchWeb2.Models
 @inject NavigationManager Navigation
+@using static HatchPatchWeb2.Models.DataConstants
 
 <MudContainer>
     <MudPaper>
@@ -15,12 +17,14 @@
         <MudPaper>
             <MudGrid>
                 <MudTooltip Arrow="true" Placement="Placement.Bottom" Text="Get suggestions for a new patch!">
-                    <MudButton Class="m-4" Variant="Variant.Filled" Color="Color.Primary" OnClick="@(NewPatch)">
+                    <MudButton Class="m-4" Variant="Variant.Filled" Color="Color.Primary" OnClick="@(NewPatch)"
+                        EndIcon="@Icons.Material.Filled.Note">
                         New Patch
                     </MudButton>
                 </MudTooltip>
                 <MudTooltip Arrow="true" Placement="Placement.Bottom" Text="Coming soon...">
-                    <MudButton Class="m-4" Variant="Variant.Filled" Color="Color.Secondary">
+                    <MudButton Class="m-4" Variant="Variant.Filled" Color="Color.Secondary"
+                        EndIcon="@Icons.Material.Filled.MusicNote">
                         New Song
                     </MudButton>
                 </MudTooltip>
@@ -38,7 +42,8 @@
         <br />
          
         <MudExpansionPanels MultiExpansion="true">
-            <MudExpansionPanel IsInitiallyExpanded="true">
+            @*TODO: Reserve for maybe some future patch pushing/online type stuff?*@
+@*            <MudExpansionPanel IsInitiallyExpanded="true">
                 <TitleContent>
                     <MudText Typo="Typo.h6">Newest (by you!)</MudText>
                 </TitleContent>
@@ -55,13 +60,29 @@
                         }
                     </MudGrid>
                 </ChildContent>
-            </MudExpansionPanel>
-            <MudExpansionPanel>
+            </MudExpansionPanel>*@
+            <MudExpansionPanel IsInitiallyExpanded="true">
                 <TitleContent>
                     <MudText Typo="Typo.h6">All Patches</MudText>
                 </TitleContent>
                 <ChildContent>
-                    <MudTable Items="Patches" Hover="true">
+                    <MudTable Items="Patches" Hover="true" Filter="new Func<SavedPatch, bool>(PatchFilter)" Class="pt-2">
+                        <ToolBarContent>
+                            <MudGrid Class="py-2">
+                                <MudItem md="7">
+                                    <MudTextField @bind-Value="patchSearchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium"></MudTextField>
+                                </MudItem>
+                                <MudItem md="5" Class="pb-2">
+                                    <MudChipSet  SelectedValuesChanged="(val) => SelectedPatchTypeValuesChanged(val)" SelectedValues="selectedPatchTypeValues" MultiSelection="true">
+                                        @foreach (var pt in PatchTypes)
+                                        {
+                                            <MudChip Value="pt.Name" Default="false" Variant="Variant.Text" Text="@pt.Name" Color="Color.Default" SelectedColor="@pt.Color">@pt.Name</MudChip>
+                                        }
+                                    </MudChipSet>
+                                </MudItem>
+                            </MudGrid>
+   
+                        </ToolBarContent>
                         <HeaderContent>
                             <MudTh>Name</MudTh>
                             <MudTh>Synth</MudTh>
@@ -90,6 +111,9 @@
                                 }
                             </MudTd>
                         </RowTemplate>
+                        <PagerContent>
+                            <MudTablePager />
+                        </PagerContent>
                     </MudTable>
                 </ChildContent>
             </MudExpansionPanel>
